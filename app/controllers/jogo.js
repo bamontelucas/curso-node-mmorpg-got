@@ -66,3 +66,14 @@ module.exports.ordenarAcaoSudito = function(application, req, res) {
         res.redirect('/jogo?msg=OK');
     });
 }
+
+module.exports.revogarAcao = function(application, req, res) {
+    if(!req.session.autorizado) {
+        res.redirect('/');
+        return;
+    }
+    let JogoDAO = new application.app.models.JogoDAO(application.config.dbConnection);
+    JogoDAO.revogarAcao(req.query.id, function() {
+        res.redirect('/jogo?msg=TASK_REMOVED');
+    });
+}

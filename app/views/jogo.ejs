@@ -38,6 +38,14 @@
 				<div class="alert alert-info" id="msg">
 					<strong>Ação realizada som sucesso</strong>
 				</div>
+			<% } else if (msg === 'TASK_FINNISHED') { %>
+				<div class="alert alert-info" id="msg">
+					<strong>Ação finalizada!</strong>
+				</div>
+			<% } else if (msg === 'TASK_REMOVED') { %>
+				<div class="alert alert-info" id="msg">
+					<strong>Ação removida!</strong>
+				</div>
 			<% } %>
 
 			<div class="row">
@@ -130,10 +138,13 @@
 
 			function cronometro() {
 				if(ticking) return;
-				
+
 				ticking = true;
 				setInterval(function() {
 					$('.tempo-restante').each(function() {
+						if(parseInt(this.textContent) <= 1) {
+							window.location.href = '/jogo?msg=TASK_FINNISHED';
+						}
 						this.textContent = parseInt(this.textContent)-1;
 					});
 				}, 1000);

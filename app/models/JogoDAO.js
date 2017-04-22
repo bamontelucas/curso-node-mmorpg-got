@@ -1,3 +1,5 @@
+let ObjectID = require('mongodb').ObjectId;
+
 function JogoDAO(connection) {
     this._connection = connection();
 }
@@ -50,8 +52,36 @@ JogoDAO.prototype.acao = function(acao, callback) {
                     break;
             }
             collection.insert(acao);
-            db.close();
-            callback();
+
+            db.collection('jogo', function(err, collection) {
+                var moedas = 0;
+                switch(acao.acao) {
+                    case "1":
+                        moedas = -2;
+                        break;
+                    case "2":
+                        moedas = -3;
+                        break;
+                    case "3":
+                        moedas = -1;
+                        break;
+                    case "4":
+                        moedas = -1;
+                        break;
+                }
+                moedas *= acao.quantidade;
+
+                collection.update(
+                    {usuario: acao.usuario},
+                    {
+                        $inc :{
+                            moeda: moedas
+                        }
+                    }
+                );
+                db.close();
+                callback();
+            });
         });
     });
 }
@@ -66,6 +96,18 @@ JogoDAO.prototype.getAcoes = function(usuario, callback) {
                 if(callback) {
                     callback(result);
                 }
+            });
+        });
+    });
+}
+
+JogoDAO.prototype.revogarAcao = function(acao, callback) {
+    this._connection.open(function(err, db) {
+        db.collection('acao', function(err, collection) {
+            let _id = ObjectID(acao);
+            collection.remove({_id}, function() {
+                callback();
+                db.close();
             });
         });
     });
