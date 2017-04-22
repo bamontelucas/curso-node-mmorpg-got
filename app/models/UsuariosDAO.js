@@ -11,7 +11,7 @@ UsuariosDAO.prototype.inserirUsuario = function(usuario) {
     });
 }
 
-UsuariosDAO.prototype.autenticar = function(usuario, req, res) {
+UsuariosDAO.prototype.autenticar = function(usuario, req, success, error) {
     this._connection.open(function(err, db) {
         db.collection('usuarios', function(err, collection) {
             collection.find(usuario).toArray(function(err, result){
@@ -24,9 +24,9 @@ UsuariosDAO.prototype.autenticar = function(usuario, req, res) {
                 db.close();
 
                 if(req.session.autorizado) {
-                    res.redirect('jogo');
+                    success();
                 } else {
-                    res.render('index', {validacao: [{msg: 'Usuário ou senha incorretos'}]});
+                    error();
                 }
             });
         });

@@ -21,5 +21,5 @@ module.exports.cadastrar = function(application, req, res) {
     let JogoDAO = new application.app.models.JogoDAO(application.config.dbConnection);
     JogoDAO.gerarParametros(req.body.usuario);
     
-    res.redirect('/');
+    res.render('cadastro_sucesso');
 }
