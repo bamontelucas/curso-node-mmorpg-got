@@ -13,7 +13,9 @@
 	
 		<!-- incluindo css -->
 		<link href="css/style.css" rel="stylesheet">
-
+		<script>
+			var ticking = false;
+		</script>
 	</head>
 
 	<body class="body-jogo">
@@ -28,31 +30,41 @@
 
 	    <div class="container">
 	    	
+			<% if(msg === 'ERRO') { %>
+				<div class="alert alert-danger" id="msg">
+					<strong>Operação inválida.</strong>
+				</div>
+			<% } else if (msg === 'OK') { %>
+				<div class="alert alert-info" id="msg">
+					<strong>Ação realizada som sucesso</strong>
+				</div>
+			<% } %>
+
 			<div class="row">
 	    		<div class="col-sm-3 casa">
-					<img src="images/casa_martell.jpg" />
+					<img src="images/casa_<%=img_casa%>.jpg" />
 				</div>
 
 	    		<div class="col-sm-9">
 					<div class="row barra-superior">
 						<div class="col-sm-2"> 
 							<img src="images/habilidades/temor.jpg" title="Temor" alt="Temor" />
-							<span>754</span>
+							<span><%=jogo.temor%></span>
 						</div>
 						
 						<div class="col-sm-2"> 
 							<img src="images/habilidades/sabedoria.jpg" title="Sabedoria" alt="Sabedoria"/>
-							<span>754</span>
+							<span><%=jogo.sabedoria%></span>
 						</div>
 						
 						<div class="col-sm-2"> 
 							<img src="images/habilidades/comercio.jpg" title="Comércio" alt="Comércio"/>
-							<span>754</span>
+							<span><%=jogo.comercio%></span>
 						</div>
 						
 						<div class="col-sm-2"> 
 							<img src="images/habilidades/magia.jpg" title="Magia" alt="Magia"/>
-							<span>754</span>
+							<span><%=jogo.magia%></span>
 						</div>
 					</div>
 				</div>
@@ -61,7 +73,9 @@
 			<div class="row">
 				<div class="col-sm-3"></div>
 				<div class="col-sm-9">
-					<div class="acoes"></div>					
+					<div class="acoes" id="acoes">
+						Hello
+					</div>					
 				</div>
 			</div>
 			
@@ -72,22 +86,58 @@
 			
 				<div class="row">
 					<div class="col-sm-1">
-						<img src="images/outros/suditos.jpg" title="Aldeões" alt="Aldeões"/>
+						<img src="images/outros/suditos.jpg" title="Aldeões" alt="Aldeões" id="btn-suditos"/>
+						<span><%=jogo.suditos%></span>
 					</div>
 					
 					<div class="col-sm-1">
-						<img src="images/outros/pergaminho.jpg" title="Pergaminhos" alt="Pergaminhos"/>
+						<img src="images/outros/pergaminho.jpg" title="Pergaminhos" alt="Pergaminhos" id="btn-pergaminho"/>
 					</div>
 					
 					<div class="col-sm-8"></div>
 					
 					<div class="col-sm-2">
 						<img src="images/outros/moeda.jpg" title="Moeda" alt="Moeda"/>
-						<span>25</span>
+						<span><%=jogo.moeda%></span>
 					</div>
 					
 				</div>
 			</div>
 		</div>
+
+		<script>
+			$('#btn-suditos').on('click', function() {
+				$('#msg').hide();
+				$.get('/suditos')
+					.done(function(data) {
+						$('#acoes').html(data);
+					})
+					.fail(function() {
+						alert('ERROU');
+					});
+			});
+			$('#btn-pergaminho').on('click', function() {
+				$('#msg').hide();
+				$.get('/pergaminhos')
+					.done(function(data) {
+						$('#acoes').html(data);
+						cronometro();
+					})
+					.fail(function() {
+						alert('ERROU');
+					});
+			});
+
+			function cronometro() {
+				if(ticking) return;
+				
+				ticking = true;
+				setInterval(function() {
+					$('.tempo-restante').each(function() {
+						this.textContent = parseInt(this.textContent)-1;
+					});
+				}, 1000);
+			}
+		</script>
 	</body>
 </html>
